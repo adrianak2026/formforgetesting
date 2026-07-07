@@ -1,4 +1,4 @@
-name = "formforgetesting"
+name = "formforge"
 main = ".open-next/worker.js"
 compatibility_date = "2026-07-06"
 compatibility_flags = ["nodejs_compat"]
@@ -16,9 +16,9 @@ APP_NAME = "FormForge"
 [[d1_databases]]
 binding = "DB"
 database_name = "formforge-db"
-database_id = "c801b0ec-3d50-4d0e-944c-4f86be29852e"
+database_id = ""
 migrations_dir = "migrations"
 
 [build]
-command = "opennextjs-cloudflare build"
+command = "npm run build"
 
