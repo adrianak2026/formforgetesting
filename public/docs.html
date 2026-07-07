@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FormForge Docs — Cloudflare Workers + D1 form backend</title>
+  <meta name="description" content="Complete FormForge setup docs: one-click Cloudflare deployment, D1, environment variables, API usage, privacy, and troubleshooting." />
+  <link rel="icon" href="/favicon.svg" />
+  <style>
+    :root{color-scheme:dark;--bg:#020617;--panel:#0f172acc;--line:#ffffff1a;--text:#e5e7eb;--muted:#94a3b8;--cyan:#67e8f9;--blue:#60a5fa;--amber:#fbbf24;--green:#86efac}*{box-sizing:border-box}body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:radial-gradient(circle at 20% 0%,#1d4ed855,transparent 36rem),radial-gradient(circle at 95% 5%,#06b6d444,transparent 30rem),var(--bg);color:var(--text);line-height:1.65}a{color:var(--cyan);text-decoration:none}a:hover{text-decoration:underline}.wrap{max-width:1180px;margin:0 auto;padding:28px 20px 80px}.nav{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:54px}.brand{display:flex;align-items:center;gap:12px;color:#fff;font-weight:900}.brand img{width:46px;height:46px;border-radius:16px}.pill{display:inline-flex;gap:8px;align-items:center;border:1px solid #67e8f955;background:#67e8f914;color:#cffafe;border-radius:999px;padding:8px 14px;font-size:14px}h1{font-size:clamp(42px,8vw,82px);line-height:.95;margin:22px 0 18px;letter-spacing:-.06em}h2{font-size:clamp(28px,4vw,44px);line-height:1.05;margin:48px 0 16px;letter-spacing:-.035em}h3{font-size:24px;margin:28px 0 10px}.lead{font-size:20px;color:#cbd5e1;max-width:850px}.grid{display:grid;gap:18px}.two{grid-template-columns:repeat(2,minmax(0,1fr))}.three{grid-template-columns:repeat(3,minmax(0,1fr))}.card{border:1px solid var(--line);background:linear-gradient(180deg,#0f172acc,#0f172a99);border-radius:28px;padding:24px;box-shadow:0 24px 80px #02061755;backdrop-filter:blur(16px)}.small{font-size:14px;color:var(--muted)}code,kbd{background:#ffffff12;border:1px solid #ffffff16;border-radius:8px;padding:2px 7px;color:#cffafe}pre{overflow:auto;background:#00000080;border:1px solid var(--line);border-radius:18px;padding:18px;color:#dbeafe}.ok{color:var(--green);font-weight:800}.warn{color:var(--amber);font-weight:800}.table{width:100%;border-collapse:collapse;overflow:hidden;border:1px solid var(--line);border-radius:18px}.table th,.table td{border-bottom:1px solid var(--line);padding:14px;text-align:left;vertical-align:top}.table th{color:#fff;background:#ffffff0a}.table tr:last-child td{border-bottom:0}.btns{display:flex;gap:12px;flex-wrap:wrap;margin-top:26px}.btn{display:inline-flex;align-items:center;justify-content:center;border-radius:16px;padding:13px 18px;font-weight:800;border:1px solid #ffffff1a;background:#ffffff12;color:#fff}.btn.primary{background:#67e8f9;color:#020617;border-color:#67e8f9}.toc{position:sticky;top:14px}.callout{border-left:4px solid var(--cyan);padding:14px 16px;background:#67e8f912;border-radius:14px}.footer{margin-top:70px;padding-top:28px;border-top:1px solid var(--line);color:var(--muted)}@media(max-width:820px){.two,.three{grid-template-columns:1fr}.nav{align-items:flex-start;flex-direction:column}.toc{position:static}h1{letter-spacing:-.04em}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <nav class="nav">
+      <a class="brand" href="/"><img src="/logo.svg" alt="FormForge logo" /><span>FormForge Docs</span></a>
+      <div class="btns" style="margin:0"><a class="btn" href="/">App</a><a class="btn primary" href="https://deploy.workers.cloudflare.com/?url=https://github.com/adrianak2026/FormForge">Deploy to Cloudflare</a></div>
+    </nav>
+
+    <header>
+      <span class="pill">🔓 No paid database · 📀 Own your data · ⚡ Cloudflare D1</span>
+      <h1>Free, privacy-first form backend you can self-host.</h1>
+      <p class="lead">FormForge is a FormZero-style backend for static sites, upgraded for a 2026 Cloudflare Workers + Next.js/OpenNext + D1 workflow. It does not require <code>DATABASE_URL</code>, PostgreSQL, Neon, Supabase, or any paid subscription.</p>
+      <div class="btns"><a class="btn primary" href="#deploy">Start deployment</a><a class="btn" href="#api">API examples</a><a class="btn" href="#troubleshooting">Fix build errors</a></div>
+    </header>
+
+    <main class="grid two" style="align-items:start;margin-top:44px">
+      <aside class="card toc">
+        <h2 style="margin-top:0;font-size:28px">Contents</h2>
+        <ol>
+          <li><a href="#features">Features</a></li>
+          <li><a href="#architecture">Architecture</a></li>
+          <li><a href="#deploy">One-click deploy</a></li>
+          <li><a href="#env">Environment variables</a></li>
+          <li><a href="#d1">D1 database setup</a></li>
+          <li><a href="#api">API and HTML usage</a></li>
+          <li><a href="#privacy">Privacy and security</a></li>
+          <li><a href="#troubleshooting">Troubleshooting</a></li>
+        </ol>
+      </aside>
+
+      <section>
+        <div class="card" id="features">
+          <h2 style="margin-top:0">Features</h2>
+          <div class="grid two">
+            <ul>
+              <li>Submit HTML forms with a simple <code>action</code> URL.</li>
+              <li>Submit JSON via <code>fetch</code>, XHR, Astro, React, Vue, Svelte, or plain JS.</li>
+              <li>Unlimited forms and submissions based on your own Cloudflare D1 limits.</li>
+              <li>D1-backed users, sessions, forms, submissions, API keys, notifications, and audit logs.</li>
+              <li>CSV export endpoint for every form.</li>
+            </ul>
+            <ul>
+              <li>Honeypot spam trap.</li>
+              <li>Origin allowlist for browser submissions.</li>
+              <li>Optional proof-of-work challenge support.</li>
+              <li>Optional webhook and email notifications.</li>
+              <li>Strict build safety: no DB initialization at module top level.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card" id="architecture">
+          <h2 style="margin-top:0">Architecture</h2>
+          <p><strong>Frontend:</strong> Next.js 16 App Router, React 19, Tailwind CSS. <strong>Runtime:</strong> Cloudflare Workers via <code>@opennextjs/cloudflare</code>. <strong>Database:</strong> Cloudflare D1 through <code>drizzle-orm/d1</code>. <strong>Schema:</strong> SQLite tables from <code>drizzle-orm/sqlite-core</code>.</p>
+          <p class="callout"><strong>Important:</strong> The database client is created only inside request handlers with <code>getDb()</code>. If Cloudflare bindings are not available during <code>next build</code>, FormForge returns safe diagnostics instead of throwing.</p>
+        </div>
+
+        <div class="card" id="deploy">
+          <h2 style="margin-top:0">One-click deployment</h2>
+          <p>When someone clicks the deploy button, Cloudflare asks that person to log in with <strong>their own Cloudflare account</strong>. The Worker, D1 database, secrets, and generated repository belong to them, not to the original GitHub username.</p>
+          <ol>
+            <li>Click <a href="https://deploy.workers.cloudflare.com/?url=https://github.com/adrianak2026/FormForge">Deploy to Cloudflare</a>.</li>
+            <li>Sign in to your free Cloudflare account. No credit card is required for the free tier.</li>
+            <li>Choose a Worker/project name, for example <code>formforge</code> or <code>my-forms</code>.</li>
+            <li>Cloudflare automatically creates the <code>formforge-db</code> D1 database. The <code>database_id</code> in <code>wrangler.jsonc</code> is intentionally blank so Cloudflare provisions it for you.</li>
+            <li>Set <code>AUTH_SECRET</code> (generate with <code>openssl rand -hex 32</code>). Leave email variables blank if you do not need email.</li>
+            <li>Deploy. On the first request FormForge auto-creates its tables, so no manual migration step is needed.</li>
+            <li>Open <code>/dashboard</code> on your new Workers URL, register an owner account, and create your first form.</li>
+          </ol>
+          <p><span class="warn">Note:</span> The deploy button may copy the seed repository into the deployer&apos;s GitHub/GitLab account. This is expected; it is how the deployer owns their deployment.</p>
+        </div>
+
+        <div class="card" id="env">
+          <h2 style="margin-top:0">Environment variables</h2>
+          <table class="table">
+            <thead><tr><th>Name</th><th>Required?</th><th>What to enter</th></tr></thead>
+            <tbody>
+              <tr><td><code>AUTH_SECRET</code></td><td><span class="ok">Yes for auth</span></td><td>Generate a long random value: <code>openssl rand -hex 32</code>. In Cloudflare dashboard: Worker → Settings → Variables → Add secret.</td></tr>
+              <tr><td><code>RESEND_API_KEY</code></td><td>No</td><td>Only if you enable email notifications. If blank, email is skipped automatically.</td></tr>
+              <tr><td><code>RESEND_FROM</code></td><td>No</td><td>Only with <code>RESEND_API_KEY</code>. Example: <code>FormForge &lt;forms@example.com&gt;</code>.</td></tr>
+              <tr><td><code>DB</code></td><td><span class="ok">Yes</span></td><td>This is not a secret text variable. It is a Cloudflare D1 binding named <code>DB</code> configured in <code>wrangler.jsonc</code> or the Cloudflare dashboard.</td></tr>
+            </tbody>
+          </table>
+          <p class="small">Do not add <code>DATABASE_URL</code>. FormForge intentionally avoids PostgreSQL for the default Cloudflare deployment.</p>
+        </div>
+
+        <div class="card" id="d1">
+          <h2 style="margin-top:0">D1 database setup commands</h2>
+          <p>For the one-click flow, Cloudflare provisions the database automatically. For manual or local control, run these after logging in with <code>npx wrangler login</code>:</p>
+          <pre><code># Optional: create D1 manually (the deploy button does this for you)
+npx wrangler d1 create formforge-db
+# copy the returned database_id into wrangler.jsonc if not using auto-provisioning
+
+npx drizzle-kit generate
+npx wrangler d1 migrations apply DB --remote
+npm run deploy</code></pre>
+          <p>If Cloudflare asks for a database name, use <code>formforge-db</code>. If your Worker name is different, that is okay; the D1 binding name should remain <code>DB</code>. FormForge also creates tables on first request, so migrations are a backup, not a requirement.</p>
+        </div>
+
+        <div class="card" id="api">
+          <h2 style="margin-top:0">API and usage examples</h2>
+          <h3>1) HTML form</h3>
+          <pre><code>&lt;form method="POST" action="https://YOUR-WORKER.workers.dev/api/submit/endpoint_xxx"&gt;
+  &lt;input name="email" type="email" required&gt;
+  &lt;textarea name="message" required&gt;&lt;/textarea&gt;
+  &lt;input name="website" hidden tabindex="-1" autocomplete="off"&gt;
+  &lt;button&gt;Send&lt;/button&gt;
+&lt;/form&gt;</code></pre>
+          <h3>2) JSON submission</h3>
+          <pre><code>await fetch("https://YOUR-WORKER.workers.dev/api/submit/endpoint_xxx", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ email: "hello@example.com", message: "Hi!" })
+});</code></pre>
+          <h3>3) Owner APIs</h3>
+          <ul>
+            <li><code>POST /api/auth/register</code> — create owner account.</li>
+            <li><code>POST /api/auth/login</code> — sign in.</li>
+            <li><code>GET /api/forms</code> — list forms.</li>
+            <li><code>POST /api/forms</code> — create a form.</li>
+            <li><code>GET /api/forms/:formId/submissions</code> — list submissions.</li>
+            <li><code>GET /api/forms/:formId/export</code> — CSV export.</li>
+          </ul>
+        </div>
+
+        <div class="card" id="privacy">
+          <h2 style="margin-top:0">Privacy and security</h2>
+          <ul>
+            <li>Data is stored in the deployer&apos;s D1 database.</li>
+            <li>No built-in third-party analytics or tracking pixels.</li>
+            <li>IP addresses are hashed per form when stored.</li>
+            <li>Session tokens and API keys are HMAC-hashed before storage.</li>
+            <li>Passwords use PBKDF2-SHA256 via Web Crypto.</li>
+            <li>Email/webhook integrations are optional and disabled by default.</li>
+          </ul>
+        </div>
+
+        <div class="card" id="troubleshooting">
+          <h2 style="margin-top:0">Troubleshooting</h2>
+          <h3>Error: <code>DATABASE_URL is required</code></h3>
+          <p>This happens when old PostgreSQL code imports a DB pool at module top level. FormForge fixes it by removing <code>pg</code>, using <code>drizzle-orm/d1</code>, and calling <code>getDb()</code> inside each route handler.</p>
+          <h3>D1 not configured</h3>
+          <p>Make sure <code>wrangler.jsonc</code> has <code>d1_databases</code> with binding <code>DB</code>, database name <code>formforge-db</code>, and your real <code>database_id</code>.</p>
+          <h3>Environment variable warnings in preview</h3>
+          <p><code>AUTH_SECRET</code> is needed for login/register. <code>RESEND_API_KEY</code> and <code>RESEND_FROM</code> are optional; leave blank to disable email. Never put production secrets into public previews.</p>
+          <h3>Does it use my GitHub username?</h3>
+          <p>No. The source repo URL is only a template. The deployer logs in to their own Cloudflare account and owns the Worker/D1 resources created during deployment.</p>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>FormForge · MIT · Built for Cloudflare Workers, D1, Drizzle, OpenNext, Next.js, and Tailwind CSS.</p>
+    </footer>
+  </div>
+</body>
+</html>

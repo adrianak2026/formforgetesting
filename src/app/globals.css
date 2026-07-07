@@ -1,0 +1,72 @@
+@import "tailwindcss";
+
+:root {
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background:
+    radial-gradient(circle at top left, rgba(37, 99, 235, 0.32), transparent 34rem),
+    radial-gradient(circle at top right, rgba(14, 165, 233, 0.24), transparent 30rem),
+    #020617;
+}
+
+::selection {
+  background: rgba(56, 189, 248, 0.35);
+  color: #ffffff;
+}
+
+.glass-panel {
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.82), rgba(15, 23, 42, 0.58));
+  box-shadow: 0 24px 80px rgba(2, 6, 23, 0.38);
+  backdrop-filter: blur(22px);
+}
+
+.grid-mask {
+  background-image:
+    linear-gradient(rgba(148, 163, 184, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(148, 163, 184, 0.08) 1px, transparent 1px);
+  background-size: 44px 44px;
+  mask-image: linear-gradient(to bottom, black, transparent);
+}
+
+.ff-input {
+  margin-top: 0.3rem;
+  width: 100%;
+  border-radius: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.05);
+  padding: 0.75rem 1rem;
+  color: #ffffff;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.ff-input:focus-visible {
+  outline: 2px solid #67e8f9;
+  outline-offset: 2px;
+}
+
+.ff-input:focus {
+  border-color: #67e8f9;
+  box-shadow: 0 0 0 1px #67e8f9;
+}
+
+.ff-input::placeholder {
+  color: rgba(148, 163, 184, 0.5);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
